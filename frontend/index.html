@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700&family=Open+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+    <title>Kaltura Video Player</title>
+    <!-- Environment Variables -->
+    <script>
+      // Default environment variables
+      window.ENV = {
+        API_BASE_URL: 'http://localhost:3000/api',
+        API_KS_ENDPOINT: 'http://localhost:3000/api/ks',
+        KALTURA_PARTNER_ID: '',
+        KALTURA_UICONF_ID: '',
+        DEFAULT_ENTRY_ID: ''
+      };
+      
+      // Load environment variables from server if available
+      fetch('/env.js')
+        .then(response => {
+          if (!response.ok) return;
+          return response.text();
+        })
+        .then(text => {
+          if (text) {
+            try {
+              // Execute the env.js script which should set window.ENV
+              const script = document.createElement('script');
+              script.textContent = text;
+              document.head.appendChild(script);
+              console.log('Environment variables loaded');
+            } catch (e) {
+              console.error('Failed to parse environment variables:', e);
+            }
+          }
+        })
+        .catch(err => {
+          console.warn('Could not load environment variables:', err);
+        })
+        .finally(() => {
+          // Load Kaltura Player script dynamically with partner ID from environment
+          loadKalturaScript();
+        });
+      
+      function loadKalturaScript() {
+        const partnerId = window.ENV.KALTURA_PARTNER_ID;
+        const uiConfId = window.ENV.KALTURA_UICONF_ID;
+        
+        if (!partnerId || !uiConfId) {
+          console.warn('Missing Kaltura configuration. Player may not work correctly.');
+        }
+        
+        const script = document.createElement('script');
+        script.src = `https://cdnapisec.kaltura.com/p/${partnerId || '0'}/embedPlaykitJs/uiconf_id/${uiConfId || '0'}`;
+        script.onerror = function() {
+          document.getElementById('kaltura-script-error').style.display = 'block';
+        };
+        document.head.appendChild(script);
+      }
+    </script>
+    <div id="kaltura-script-error" style="display: none; color: red; padding: 20px; text-align: center;">
+      Failed to load Kaltura Player script. Please check your internet connection and try again.
+    </div>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
