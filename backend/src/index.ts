@@ -27,7 +27,25 @@ app.use(cors({
 
 // Apply helmet after CORS
 app.use(helmet({
-  crossOriginResourcePolicy: { policy: 'cross-origin' } // Allow cross-origin resource sharing
+  crossOriginResourcePolicy: { policy: 'cross-origin' }, // Allow cross-origin resource sharing
+  hsts: {
+    maxAge: 63072000, // 2 years in seconds
+    includeSubDomains: true,
+    preload: true
+  },
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
+      styleSrc: ["'self'", "'unsafe-inline'"],
+      imgSrc: ["'self'", "data:"],
+      connectSrc: ["'self'"]
+    }
+  },
+  // These are simple boolean options
+  noSniff: true, // X-Content-Type-Options
+  frameguard: { action: 'deny' }, // X-Frame-Options
+  referrerPolicy: { policy: 'strict-origin-when-cross-origin' }
 }));
 app.use(express.json()); // Parse JSON request bodies
 

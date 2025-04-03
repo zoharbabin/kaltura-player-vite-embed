@@ -8,8 +8,8 @@ const env = (window as any).ENV || {};
 export const config = {
   // API endpoints
   api: {
-    baseUrl: env.API_BASE_URL || 'http://localhost:3000/api',
-    ksEndpoint: env.API_KS_ENDPOINT || 'http://localhost:3000/api/ks',
+    baseUrl: env.API_BASE_URL || '/api',
+    ksEndpoint: env.API_KS_ENDPOINT || '/api/ks',
   },
   
   // Kaltura player configuration

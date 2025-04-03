@@ -20,16 +20,32 @@ const VideoIcon = () => (
 function App() {
   const [entryId, setEntryId] = useState<string>(config.player.defaultEntryId);
   const [customEntryId, setCustomEntryId] = useState<string>('');
+  const [validationError, setValidationError] = useState<string | null>(null);
+
+  // Kaltura entry ID validation pattern - must match backend validation
+  const entryIdPattern = /^[0-9]_[a-zA-Z0-9]{8,}$/;
 
   const handleEntryIdChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setCustomEntryId(e.target.value);
+    setValidationError(null); // Clear any previous validation errors
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (customEntryId.trim()) {
-      setEntryId(customEntryId.trim());
+    const trimmedEntryId = customEntryId.trim();
+    
+    if (!trimmedEntryId) {
+      return;
     }
+    
+    // Validate entry ID format
+    if (!entryIdPattern.test(trimmedEntryId)) {
+      setValidationError('Invalid Entry ID format. Must start with a number followed by underscore and at least 8 alphanumeric characters.');
+      return;
+    }
+    
+    // If validation passes, set the entry ID
+    setEntryId(trimmedEntryId);
   };
 
   return (
@@ -55,12 +71,18 @@ function App() {
                 onChange={handleEntryIdChange}
                 placeholder="Enter Kaltura Entry ID"
                 aria-label="Video Entry ID"
+                className={validationError ? 'input-error' : ''}
               />
               <button type="submit" className="primary-button">
                 <PlayIcon />
                 Load Video
               </button>
             </div>
+            {validationError && (
+              <div className="error-message" role="alert">
+                {validationError}
+              </div>
+            )}
           </form>
           
           <div className="current-video-info">
@@ -78,9 +100,9 @@ function App() {
       <footer className="app-footer">
         <p>Kaltura Video Embedding Application</p>
         <div className="footer-links">
-          <a href="#" className="footer-link">Documentation</a>
-          <a href="#" className="footer-link">Support</a>
-          <a href="#" className="footer-link">Privacy Policy</a>
+          <span className="footer-link">TBD Link 1</span>
+          <span className="footer-link">TBD Link 2</span>
+          <span className="footer-link">TBD Link 3</span>
         </div>
       </footer>
     </div>
